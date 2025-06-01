@@ -14,7 +14,7 @@ class kassa(QtWidgets.QWidget, Supermarket.Ui_Kassa):
         self.setupUi(self) # запускаем интерфейс
 
         self.conn = mysql.connector.connect(
-            host='localhost',
+            host='192.168.15.101',
             port='3306',
             user='user08',
             password='36278',
@@ -82,7 +82,7 @@ class addProduct(QtWidgets.QDialog, add_product.Ui_AddProductDialog):
         weight = self.weightInput.value()
 
         self.conn = mysql.connector.connect(
-                host='localhost',
+                host='192.168.15.101',
                 port='3306',
                 user='user08',
                 password='36278',
@@ -122,7 +122,7 @@ class addProductToGS(QtWidgets.QDialog, add_product_to_GS.Ui_AddToGrocerySetDial
         self.setupUi(self)
 
         self.conn = mysql.connector.connect(
-            host='localhost',
+            host='192.168.15.101',
             port='3306',
             user='user08',
             password='36278',
