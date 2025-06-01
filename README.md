@@ -34,13 +34,13 @@
    mysql -u root -p
    ```
    Введите пароль, который вы указывали для root (если вы выбрали не устанавливать пароль, то просто нажмите Enter), затем в MySQL CLI выполните:
-      ```markdown
+   ```markdown
       CREATE DATABASE user08;
       CREATE USER 'user08'@'localhost' IDENTIFIED BY '36278';
       GRANT ALL PRIVILEGES ON user08.* TO 'user08'@'localhost';
       FLUSH PRIVILEGES;
       EXIT;
-      ```
+   ```
 4) Проверка соедеинения
    ```markdown
    mysql -u user08 -p36278 user08
