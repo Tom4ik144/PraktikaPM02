@@ -59,16 +59,12 @@ class kassa(QtWidgets.QWidget, Supermarket.Ui_Kassa):
         self.addProduct = chooseTable() 
         self.addProduct.show()
 
-
     def clear_set(self):
         cursor = self.conn.cursor()
         cursor.execute("DELETE FROM Grosery_set")
         self.conn.commit()
         self.load_grocery_set_data()
-
-
-
-
+    
 class addProduct(QtWidgets.QDialog, add_product.Ui_AddProductDialog):
     def __init__(self):
         super().__init__()
@@ -93,10 +89,8 @@ class addProduct(QtWidgets.QDialog, add_product.Ui_AddProductDialog):
         cursor.execute("INSERT INTO product (name_product, price, weight) VALUES (%s, %s, %s) ", (name, price, weight))
 
         self.conn.commit()
-        self.parent.load_grocery_set_data()
+        self.load_grocery_set_data()
         self.hide()
-
-
 
 class chooseTable(QtWidgets.QWidget, choose_table.Ui_choose_table):
     def __init__(self):
@@ -145,7 +139,6 @@ class addProductToGS(QtWidgets.QDialog, add_product_to_GS.Ui_AddToGrocerySetDial
         name_product_add = self.productComboBox.currentText()
         quantity_product = self.quantitySpinBox.value()
 
-    
         cursor = self.conn.cursor()
         cursor.execute("SELECT ID_product FROM product WHERE name_product = %s", (name_product_add,))
         product_id = cursor.fetchone()[0]
@@ -156,13 +149,11 @@ class addProductToGS(QtWidgets.QDialog, add_product_to_GS.Ui_AddToGrocerySetDial
         self.load_products_to_combobox()
         self.hide()
 
-        
-
 def main():
     application = QtWidgets.QApplication(sys.argv)
     windows = kassa()
     windows.show()
-    sys.exit(application.exec_())
+    application.exec_()
 
 if __name__ == "__main__":
     main()
