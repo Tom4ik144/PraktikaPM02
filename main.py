@@ -6,6 +6,7 @@ import Supermarket
 import add_product
 import choose_table
 import add_product_to_GS
+import loading
 import mysql.connector
 
 class kassa(QtWidgets.QWidget, Supermarket.Ui_Kassa): 
@@ -21,39 +22,14 @@ class kassa(QtWidgets.QWidget, Supermarket.Ui_Kassa):
             database='user08'
         ) # подключаемся к базе данных
 
-        self.load_grocery_set_data()
+        loading.load_grocery_set_data(self)
 
-    def load_grocery_set_data(self):
-        cursor = self.conn.cursor() # создаём курсор, который будет считывать данные 
-        cursor.execute('''SELECT P.name_product, GS.numbers_product
-                          FROM Grosery_set GS
-                          JOIN product P ON GS.ID_product = P.ID_product;''')
-
-        self.GrocerySetTable.setRowCount(0)
-        rowPositionGrosery_set = 0
-
-        for one_row in cursor:
-            self.GrocerySetTable.insertRow(rowPositionGrosery_set)
-            self.GrocerySetTable.setItem(rowPositionGrosery_set, 0, QtWidgets.QTableWidgetItem(str(one_row[0])))
-            self.GrocerySetTable.setItem(rowPositionGrosery_set, 1, QtWidgets.QTableWidgetItem(str(one_row[1])))
-            rowPositionGrosery_set += 1
-
-        cursor1 = self.conn.cursor()
-        cursor1.execute('''SELECT name_product, price, weight FROM product''')
-
-        self.productTable.setRowCount(0)
-        rowPositionProduct = 0
-
-        for two_row in cursor1:
-            self.productTable.insertRow(rowPositionProduct)
-            self.productTable.setItem(rowPositionProduct, 0, QtWidgets.QTableWidgetItem(str(two_row[0])))
-            self.productTable.setItem(rowPositionProduct, 1, QtWidgets.QTableWidgetItem(str(two_row[1])))
-            self.productTable.setItem(rowPositionProduct, 2, QtWidgets.QTableWidgetItem(str(two_row[2])))
-            rowPositionProduct += 1
 
         self.addButton.clicked.connect(self.add_product)
         
         self.clearButton.clicked.connect(self.clear_set)
+        
+
 
     def add_product(self):
         self.addProduct = chooseTable() 
@@ -64,7 +40,7 @@ class kassa(QtWidgets.QWidget, Supermarket.Ui_Kassa):
         cursor = self.conn.cursor()
         cursor.execute("DELETE FROM Grosery_set")
         self.conn.commit()
-        self.load_grocery_set_data()
+        loading.load_grocery_set_data(self)
 
 
 
@@ -93,7 +69,7 @@ class addProduct(QtWidgets.QDialog, add_product.Ui_AddProductDialog):
         cursor.execute("INSERT INTO product (name_product, price, weight) VALUES (%s, %s, %s) ", (name, price, weight))
 
         self.conn.commit()
-        self.parent.load_grocery_set_data()
+        loading.load_grocery_set_data(self)
         self.hide()
 
 
@@ -154,15 +130,16 @@ class addProductToGS(QtWidgets.QDialog, add_product_to_GS.Ui_AddToGrocerySetDial
                         VALUES (%s, %s)''', (product_id, quantity_product))
         self.conn.commit()
         self.load_products_to_combobox()
+        loading.load_grocery_set_data(self)
         self.hide()
 
-        
 
 def main():
     application = QtWidgets.QApplication(sys.argv)
     windows = kassa()
     windows.show()
-    sys.exit(application.exec_())
+    application.exec_()
+
 
 if __name__ == "__main__":
     main()
