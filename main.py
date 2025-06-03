@@ -14,7 +14,7 @@ class kassa(QtWidgets.QWidget, Supermarket.Ui_Kassa):
         self.setupUi(self) # запускаем интерфейс
 
         self.conn = mysql.connector.connect(
-            host='192.168.15.101',
+            host='localhost',
             port='3306',
             user='user08',
             password='36278',
