@@ -23,8 +23,13 @@ class kassa(QtWidgets.QWidget, Supermarket.Ui_Kassa):
 
         self.load_grocery_set_data()
 
+        self.addButton.clicked.connect(self.add_product)
+        
+        self.clearButton.clicked.connect(self.clear_set)
+
+
     def load_grocery_set_data(self):
-        cursor = self.conn.cursor() # создаём курсор, который будет считывать данные 
+        cursor = self.conn.cursor()
         cursor.execute('''SELECT P.name_product, GS.numbers_product
                           FROM Grosery_set GS
                           JOIN product P ON GS.ID_product = P.ID_product;''')
@@ -51,12 +56,8 @@ class kassa(QtWidgets.QWidget, Supermarket.Ui_Kassa):
             self.productTable.setItem(rowPositionProduct, 2, QtWidgets.QTableWidgetItem(str(two_row[2])))
             rowPositionProduct += 1
 
-        self.addButton.clicked.connect(self.add_product)
-        
-        self.clearButton.clicked.connect(self.clear_set)
-
     def add_product(self):
-        self.addProduct = chooseTable() 
+        self.addProduct = chooseTable(parent=self)  # Передаём ссылку на главное окно
         self.addProduct.show()
 
     def clear_set(self):
@@ -66,8 +67,10 @@ class kassa(QtWidgets.QWidget, Supermarket.Ui_Kassa):
         self.load_grocery_set_data()
     
 class addProduct(QtWidgets.QDialog, add_product.Ui_AddProductDialog):
-    def __init__(self):
+    def __init__(self, parent=None, conn=None): # Ссылка на главное окно и подключение оттуда же (parent и conn)
         super().__init__()
+        self.parent = parent
+        self.conn = conn
         self.setupUi(self)
         
         self.addButton.clicked.connect(self.add_product_to_db)
@@ -77,51 +80,38 @@ class addProduct(QtWidgets.QDialog, add_product.Ui_AddProductDialog):
         price = self.priceInput.value()
         weight = self.weightInput.value()
 
-        self.conn = mysql.connector.connect(
-                host='192.168.15.101',
-                port='3306',
-                user='user08',
-                password='36278',
-                database='user08'
-            )
-
         cursor=self.conn.cursor()
         cursor.execute("INSERT INTO product (name_product, price, weight) VALUES (%s, %s, %s) ", (name, price, weight))
 
         self.conn.commit()
-        self.load_grocery_set_data()
+        self.parent.load_grocery_set_data() # обновляем данные в главном окне
         self.hide()
 
 class chooseTable(QtWidgets.QWidget, choose_table.Ui_choose_table):
-    def __init__(self):
+    def __init__(self, parent=None):
         super().__init__()
+        self.parent = parent
         self.setupUi(self)
 
         self.choose_productBtn.clicked.connect(self.chooseProduct)
         self.choose_grocery_setBtn.clicked.connect(self.chooseGS)
 
     def chooseProduct(self):
-        self.addProduct = addProduct()
+        self.addProduct = addProduct(parent=self.parent, conn=self.parent.conn) 
         self.addProduct.show()
         self.hide()
  
     def chooseGS(self):
-        self.GS = addProductToGS()
+        self.GS = addProductToGS(parent=self.parent, conn=self.parent.conn)
         self.GS.show()
         self.hide()
 
 class addProductToGS(QtWidgets.QDialog, add_product_to_GS.Ui_AddToGrocerySetDialog):
-    def __init__(self):
+    def __init__(self, parent=None, conn=None):
         super().__init__()
+        self.parent = parent
+        self.conn = conn
         self.setupUi(self)
-
-        self.conn = mysql.connector.connect(
-            host='192.168.15.101',
-            port='3306',
-            user='user08',
-            password='36278',
-            database='user08'
-        )
 
         self.load_products_to_combobox()
         self.addButton.clicked.connect(self.add_product_GS)
@@ -129,12 +119,12 @@ class addProductToGS(QtWidgets.QDialog, add_product_to_GS.Ui_AddToGrocerySetDial
     def load_products_to_combobox(self):
         cursor = self.conn.cursor()
         cursor.execute("SELECT name_product FROM product")
-        
+
         self.productComboBox.clear()
-        
+
         for product in cursor:
             self.productComboBox.addItem(str(product[0]))
-
+    
     def add_product_GS(self):
         name_product_add = self.productComboBox.currentText()
         quantity_product = self.quantitySpinBox.value()
@@ -142,11 +132,12 @@ class addProductToGS(QtWidgets.QDialog, add_product_to_GS.Ui_AddToGrocerySetDial
         cursor = self.conn.cursor()
         cursor.execute("SELECT ID_product FROM product WHERE name_product = %s", (name_product_add,))
         product_id = cursor.fetchone()[0]
-        
+
         cursor.execute('''INSERT INTO Grosery_set (ID_product, numbers_product) 
                         VALUES (%s, %s)''', (product_id, quantity_product))
         self.conn.commit()
-        self.load_products_to_combobox()
+
+        self.parent.load_grocery_set_data()
         self.hide()
 
 def main():
