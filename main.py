@@ -37,10 +37,10 @@ class Kassa(QtWidgets.QWidget, Supermarket.Ui_Kassa):
 
         for one_row in cursor:
             self.GrocerySetTable.insertRow(row_position_grosery_set)
-            self.GrocerySetTable.setItem(row_position_grosery_set, 0
-            , QtWidgets.QTableWidgetItem(one_row[0]))
-            self.GrocerySetTable.setItem(row_position_grosery_set, 1
-            , QtWidgets.QTableWidgetItem(str(one_row[1])))
+            self.GrocerySetTable.setItem(row_position_grosery_set, 0, 
+            QtWidgets.QTableWidgetItem(one_row[0]))
+            self.GrocerySetTable.setItem(row_position_grosery_set, 1, 
+            QtWidgets.QTableWidgetItem(str(one_row[1])))
             row_position_grosery_set += 1
 
         cursor1 = self.conn.cursor()
@@ -51,12 +51,12 @@ class Kassa(QtWidgets.QWidget, Supermarket.Ui_Kassa):
 
         for two_row in cursor1:
             self.productTable.insertRow(row_position_product)
-            self.productTable.setItem(row_position_product, 0
-            , QtWidgets.QTableWidgetItem(two_row[0]))
-            self.productTable.setItem(row_position_product, 1
-            , QtWidgets.QTableWidgetItem(str(two_row[1])))
-            self.productTable.setItem(row_position_product, 2
-            , QtWidgets.QTableWidgetItem(str(two_row[2])))
+            self.productTable.setItem(row_position_product, 0, 
+            QtWidgets.QTableWidgetItem(two_row[0]))
+            self.productTable.setItem(row_position_product, 1, 
+            QtWidgets.QTableWidgetItem(str(two_row[1])))
+            self.productTable.setItem(row_position_product, 2, 
+            QtWidgets.QTableWidgetItem(str(two_row[2])))
             row_position_product += 1
 
     def choose_table(self):
@@ -140,8 +140,8 @@ class AddProductToGS(QtWidgets.QDialog, add_product_to_GS.Ui_AddToGrocerySetDial
         quantity_product = self.quantitySpinBox.value()
 
         cursor = self.conn.cursor()
-        cursor.execute("SELECT ID_product FROM product WHERE name_product = %s"
-        , (name_product_add,))
+        cursor.execute("SELECT ID_product FROM product WHERE name_product = %s", 
+        (name_product_add,))
         product_id = cursor.fetchone()[0]
 
         cursor.execute('''INSERT INTO Grosery_set (ID_product, numbers_product)
