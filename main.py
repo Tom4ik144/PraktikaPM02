@@ -8,7 +8,7 @@ import choose_table
 import add_product_to_GS
 
 class Kassa(QtWidgets.QWidget, Supermarket.Ui_Kassa):
-    ''' Запуск приложения''' 
+    ''' Запуск интерфейса''' 
     def __init__(self):
         super().__init__()
         self.setupUi(self) # запускаем интерфейс
@@ -152,7 +152,7 @@ class AddProductToGS(QtWidgets.QDialog, add_product_to_GS.Ui_AddToGrocerySetDial
         self.hide()
 
 def main():
-    ''' Запуска интерфейса '''
+    ''' Запуска приложения '''
     application = QtWidgets.QApplication(sys.argv)
     windows = Kassa()
     windows.show()
